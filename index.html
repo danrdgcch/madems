@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cálculo interactivo · Integración por partes y Separación de variables</title>
+
+<!-- KaTeX (jsDelivr; respaldo en cdnjs si falla) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
+if(!window.katex||!window.renderMathInElement){
+  document.write('<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">');
+  document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"><\/script>');
+  document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"><\/script>');
+}
+</script>
+
+<!-- Fuentes (unión de las de ambos archivos) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:#f5f2e8;}
+
+  /* ---------- Selector global de módulos ---------- */
+  #gbar{
+    position:sticky; top:0; z-index:100; height:48px;
+    background:#101726; color:#fff; display:flex; align-items:center; gap:6px;
+    padding:0 14px; box-shadow:0 2px 10px rgba(0,0,0,.25); overflow-x:auto;
+    font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  #gbar .gt{font-size:.74rem; letter-spacing:.14em; text-transform:uppercase; opacity:.65; margin-right:10px; white-space:nowrap;}
+  #gbar button{
+    flex:0 0 auto; border:1px solid rgba(255,255,255,.25); background:transparent; color:#fff;
+    padding:7px 14px; border-radius:999px; cursor:pointer; font-size:.86rem; font-weight:600; white-space:nowrap;
+  }
+  #gbar button:hover{background:rgba(255,255,255,.12);}
+  #gbar button.on{background:#fff; color:#101726; border-color:#fff;}
+  #gbar button:focus-visible{outline:3px solid #CC7A22; outline-offset:2px;}
+  .module{display:none; min-height:calc(100vh - 48px);}
+  .module.on{display:block;}
+
+  /* ================= MÓDULO 1 · Integración por partes ================= */
+#mod-ib{
+    --paper:#F6F7FB; --paper-2:#FFFFFF;
+    --ink:#182135; --ink-soft:#4A5570; --ink-faint:#8A93A8;
+    --amber:#CC7A22; --amber-deep:#A85E14; --amber-soft:#FBEFD9;
+    --teal:#1F7A63; --teal-soft:#DDEFE9;
+    --rust:#B23A2E; --rust-soft:#F8E1DD;
+    --blue:#2E4A7D; --blue-soft:#E4EAF5;
+    --line:#E2E5EE; --line-2:#D2D7E4;
+    --shadow:0 1px 2px rgba(24,33,53,.06), 0 8px 24px rgba(24,33,53,.07);
+    --shadow-lg:0 12px 40px rgba(24,33,53,.16);
+  }
+#mod-ib *{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+#mod-ib{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:Georgia,'Times New Roman',serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      linear-gradient(rgba(46,74,125,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(46,74,125,.035) 1px, transparent 1px);
+    background-size:28px 28px;
+  }
+#mod-ib h1,#mod-ib h2,#mod-ib h3,#mod-ib .disp{font-family:'Fraunces',Georgia,serif;}
+#mod-ib .mono{font-family:'Space Mono',ui-monospace,monospace;}
+#mod-ib header.topbar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(246,247,251,.86); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+#mod-ib .brand{
+    max-width:980px; margin:0 auto; padding:10px 20px 0;
+    display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+  }
+#mod-ib .brand .logo{
+    font-family:'Space Mono',monospace; font-weight:700; font-size:.8rem;
+    letter-spacing:.18em; color:var(--amber-deep); text-transform:uppercase;
+  }
+#mod-ib .brand .logo b{color:var(--ink);}
+#mod-ib .nav{
+    max-width:980px; margin:0 auto; padding:8px 12px 10px;
+    display:flex; gap:4px; overflow-x:auto; scrollbar-width:none;
+  }
+#mod-ib .nav::-webkit-scrollbar{display:none;}
+#mod-ib .nav button{
+    flex:0 0 auto; border:1px solid transparent; background:transparent;
+    font-family:'Space Mono',monospace; font-size:.74rem; letter-spacing:.02em;
+    color:var(--ink-soft); padding:7px 12px; border-radius:999px; cursor:pointer;
+    white-space:nowrap; transition:.15s;
+  }
+#mod-ib .nav button .n{color:var(--ink-faint); margin-right:6px;}
+#mod-ib .nav button:hover{background:var(--paper-2); color:var(--ink);}
+#mod-ib .nav button.active{background:var(--ink); color:#fff;}
+#mod-ib .nav button.active .n{color:var(--amber);}
+#mod-ib main{max-width:980px; margin:0 auto; padding:0 20px 120px;}
+#mod-ib section.panel{display:none; animation:fade .4s ease;}
+#mod-ib section.panel.active{display:block;}
+@keyframes fade{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+#mod-ib .eyebrow{
+    font-family:'Space Mono',monospace; font-size:.72rem; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--amber-deep); margin:34px 0 6px;
+  }
+#mod-ib h1{font-size:clamp(2rem,6vw,3.1rem); line-height:1.05; font-weight:600; margin:.1em 0 .3em; letter-spacing:-.01em;}
+#mod-ib h2{font-size:clamp(1.5rem,4vw,2.1rem); font-weight:600; margin:.2em 0 .4em; letter-spacing:-.01em;}
+#mod-ib h3{font-size:1.18rem; font-weight:600; margin:1.3em 0 .4em;}
+#mod-ib p{margin:.6em 0; color:var(--ink-soft);}
+#mod-ib p.lead{font-size:1.12rem; color:var(--ink);}
+#mod-ib .ink{color:var(--ink);}
+#mod-ib .card{
+    background:var(--paper-2); border:1px solid var(--line);
+    border-radius:16px; padding:22px 24px; box-shadow:var(--shadow); margin:16px 0;
+  }
+#mod-ib .card.flush{padding:0; overflow:hidden;}
+#mod-ib .formula-box{
+    background:var(--ink); color:#F3EFE6; border-radius:14px;
+    padding:18px 20px; margin:14px 0; overflow-x:auto; text-align:center;
+  }
+#mod-ib .formula-box .katex{color:#F3EFE6;}
+#mod-ib .formula-box.amber{background:linear-gradient(135deg,#1d2740,#241c0e); box-shadow:inset 0 0 0 1px rgba(204,122,34,.4);}
+#mod-ib .pill{
+    display:inline-block; font-family:'Space Mono',monospace; font-size:.7rem;
+    letter-spacing:.08em; padding:3px 9px; border-radius:999px; vertical-align:middle;
+  }
+#mod-ib .pill.amber{background:var(--amber-soft); color:var(--amber-deep);}
+#mod-ib .pill.teal{background:var(--teal-soft); color:var(--teal);}
+#mod-ib .pill.blue{background:var(--blue-soft); color:var(--blue);}
+#mod-ib .pill.rust{background:var(--rust-soft); color:var(--rust);}
+#mod-ib .btn{
+    font-family:'Space Mono',monospace; font-size:.78rem; letter-spacing:.03em;
+    border:1px solid var(--line-2); background:var(--paper-2); color:var(--ink);
+    padding:10px 16px; border-radius:10px; cursor:pointer; transition:.15s;
+  }
+#mod-ib .btn:hover{border-color:var(--ink); transform:translateY(-1px);}
+#mod-ib .btn.primary{background:var(--ink); color:#fff; border-color:var(--ink);}
+#mod-ib .btn.primary:hover{background:#0f1626;}
+#mod-ib .btn.amber{background:var(--amber); color:#fff; border-color:var(--amber);}
+#mod-ib .btn.amber:hover{background:var(--amber-deep);}
+#mod-ib .btn:focus-visible,#mod-ib .nav button:focus-visible{outline:3px solid var(--amber); outline-offset:2px;}
+#mod-ib .reveal{margin:12px 0;}
+#mod-ib .reveal .body{
+    max-height:0; overflow:hidden; transition:max-height .5s ease, opacity .4s;
+    opacity:0; border-left:3px solid var(--amber); padding-left:0;
+  }
+#mod-ib .reveal.open .body{max-height:1400px; opacity:1; padding-left:16px; margin-top:12px;}
+#mod-ib .next-row{display:flex; justify-content:space-between; gap:12px; margin:38px 0 10px; flex-wrap:wrap;}
+#mod-ib .hero-eq{
+    font-size:1.4rem; margin:18px 0; text-align:center;
+  }
+#mod-ib .trade{
+    display:flex; align-items:center; justify-content:center; gap:18px; flex-wrap:wrap;
+    margin:8px 0;
+  }
+#mod-ib .trade .side{
+    background:var(--paper-2); border:1px dashed var(--line-2); border-radius:14px;
+    padding:14px 18px; min-width:150px; text-align:center;
+  }
+#mod-ib .trade .side.hard{border-color:var(--rust); background:var(--rust-soft);}
+#mod-ib .trade .side.easy{border-color:var(--teal); background:var(--teal-soft);}
+#mod-ib .trade .swap{font-size:1.8rem; color:var(--amber-deep);}
+#mod-ib .trade small{display:block; font-family:'Space Mono',monospace; font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;}
+#mod-ib .ladder{display:grid; gap:8px; margin:18px 0;}
+#mod-ib .rung{
+    display:grid; grid-template-columns:54px 1fr; align-items:center; gap:14px;
+    background:var(--paper-2); border:1px solid var(--line); border-radius:12px;
+    padding:12px 14px; transition:.2s; cursor:default;
+  }
+#mod-ib .rung .let{
+    font-family:'Fraunces',serif; font-weight:700; font-size:1.7rem;
+    width:54px; height:54px; display:flex; align-items:center; justify-content:center;
+    background:var(--ink); color:#fff; border-radius:11px;
+  }
+#mod-ib .rung .desc b{color:var(--ink); font-family:Georgia,serif;}
+#mod-ib .rung .desc span{color:var(--ink-soft); font-size:.92rem;}
+#mod-ib .rung[data-rank="1"] .let{background:var(--amber); }
+#mod-ib .rung:hover{border-color:var(--line-2); transform:translateX(4px);}
+#mod-ib .rung .prio{margin-left:auto; font-family:'Space Mono',monospace; font-size:.66rem; color:var(--ink-faint);}
+#mod-ib .arrow-note{display:flex; align-items:center; gap:10px; color:var(--amber-deep); font-family:'Space Mono',monospace; font-size:.74rem; margin:6px 0 0;}
+#mod-ib .lab{background:var(--paper-2); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:var(--shadow);}
+#mod-ib .lab .q{font-size:1.25rem; text-align:center; margin:8px 0 18px;}
+#mod-ib .choices{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+@media(max-width:520px){#mod-ib .choices{grid-template-columns:1fr;}}
+#mod-ib .choice{
+    border:2px solid var(--line); background:var(--paper); border-radius:12px;
+    padding:16px; cursor:pointer; text-align:center; font-size:1.1rem; transition:.15s;
+  }
+#mod-ib .choice:hover{border-color:var(--amber); transform:translateY(-2px);}
+#mod-ib .choice.right{border-color:var(--teal); background:var(--teal-soft);}
+#mod-ib .choice.wrong{border-color:var(--rust); background:var(--rust-soft);}
+#mod-ib .lab .fb{margin-top:16px; min-height:1px;}
+#mod-ib .fb-box{border-radius:10px; padding:13px 15px; font-size:.96rem;}
+#mod-ib .fb-box.ok{background:var(--teal-soft); color:#14543f; border:1px solid var(--teal);}
+#mod-ib .fb-box.no{background:var(--rust-soft); color:#7c2419; border:1px solid var(--rust);}
+#mod-ib .lab-meta{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-family:'Space Mono',monospace; font-size:.72rem; color:var(--ink-faint);}
+#mod-ib .ex-tabs{display:flex; gap:6px; flex-wrap:wrap; margin:8px 0 18px;}
+#mod-ib .ex-tab{
+    border:1px solid var(--line); background:var(--paper-2); border-radius:10px;
+    padding:9px 12px; cursor:pointer; font-size:.95rem; transition:.15s;
+    display:flex; flex-direction:column; align-items:center; gap:3px; min-width:84px;
+  }
+#mod-ib .ex-tab small{font-family:'Space Mono',monospace; font-size:.6rem; letter-spacing:.06em; color:var(--ink-faint); text-transform:uppercase;}
+#mod-ib .ex-tab:hover{border-color:var(--line-2);}
+#mod-ib .ex-tab.active{border-color:var(--amber); background:var(--amber-soft);}
+#mod-ib .ex-tab.active small{color:var(--amber-deep);}
+#mod-ib .ex-body{display:none;}
+#mod-ib .ex-body.active{display:block;}
+#mod-ib .uvtable{width:100%; border-collapse:collapse; margin:12px 0; font-size:1.02rem;}
+#mod-ib .uvtable td{border:1px solid var(--line); padding:10px 12px; text-align:center; background:var(--paper-2);}
+#mod-ib .uvtable td.h{background:var(--blue-soft); font-family:'Space Mono',monospace; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--blue);}
+#mod-ib .quiz-q{border-bottom:1px solid var(--line); padding:20px 0;}
+#mod-ib .quiz-q:last-child{border-bottom:none;}
+#mod-ib .quiz-q .stem{font-size:1.08rem; margin-bottom:14px;}
+#mod-ib .quiz-q .stem .num{font-family:'Space Mono',monospace; color:var(--amber-deep); margin-right:8px; font-size:.85rem;}
+#mod-ib .opts{display:grid; gap:9px;}
+#mod-ib .opt{
+    text-align:left; border:1.5px solid var(--line); background:var(--paper-2);
+    border-radius:10px; padding:12px 15px; cursor:pointer; font-size:1rem; transition:.13s;
+    display:flex; gap:11px; align-items:center;
+  }
+#mod-ib .opt .mk{font-family:'Space Mono',monospace; color:var(--ink-faint); font-weight:700;}
+#mod-ib .opt:hover{border-color:var(--amber);}
+#mod-ib .opt.right{border-color:var(--teal); background:var(--teal-soft);}
+#mod-ib .opt.right .mk{color:var(--teal);}
+#mod-ib .opt.wrong{border-color:var(--rust); background:var(--rust-soft);}
+#mod-ib .opt.wrong .mk{color:var(--rust);}
+#mod-ib .opt.locked{cursor:default; opacity:.85;}
+#mod-ib .qexpl{margin-top:11px; font-size:.92rem; color:var(--ink-soft); background:var(--blue-soft);
+    border-radius:9px; padding:11px 13px; display:none;}
+#mod-ib .qexpl.show{display:block;}
+#mod-ib .scorebar{
+    position:sticky; bottom:84px; background:var(--ink); color:#fff; border-radius:12px;
+    padding:12px 18px; display:flex; justify-content:space-between; align-items:center;
+    box-shadow:var(--shadow-lg); margin-top:24px; font-family:'Space Mono',monospace; font-size:.85rem;
+  }
+#mod-ib .scorebar b{color:var(--amber); font-size:1.1rem;}
+#mod-ib #fab{
+    position:fixed; right:20px; bottom:20px; z-index:60;
+    background:var(--amber); color:#fff; border:none; border-radius:999px;
+    padding:13px 18px 13px 14px; box-shadow:var(--shadow-lg); cursor:pointer;
+    display:flex; align-items:center; gap:9px; font-family:'Fraunces',serif; font-weight:600; font-size:.98rem;
+    transition:.2s;
+  }
+#mod-ib #fab:hover{background:var(--amber-deep); transform:translateY(-2px);}
+#mod-ib #fab .dot{width:9px; height:9px; border-radius:50%; background:#fff; box-shadow:0 0 0 3px rgba(255,255,255,.35);}
+#mod-ib #chat{
+    position:fixed; right:18px; bottom:18px; z-index:70; width:min(400px,calc(100vw - 36px));
+    height:min(620px,calc(100vh - 36px)); background:var(--paper-2);
+    border:1px solid var(--line-2); border-radius:18px; box-shadow:var(--shadow-lg);
+    display:none; flex-direction:column; overflow:hidden;
+  }
+#mod-ib #chat.open{display:flex;}
+#mod-ib .chat-head{background:var(--ink); color:#fff; padding:14px 16px; display:flex; align-items:center; gap:11px;}
+#mod-ib .chat-head .av{width:38px; height:38px; border-radius:10px; background:var(--amber); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:1.2rem;}
+#mod-ib .chat-head .meta b{font-family:'Fraunces',serif; font-size:1rem;}
+#mod-ib .chat-head .meta span{display:block; font-family:'Space Mono',monospace; font-size:.64rem; letter-spacing:.06em; color:var(--amber-soft); text-transform:uppercase;}
+#mod-ib .chat-head .x{margin-left:auto; background:transparent; border:none; color:#fff; font-size:1.3rem; cursor:pointer; opacity:.8;}
+#mod-ib .chat-head .x:hover{opacity:1;}
+#mod-ib .chat-log{flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; background:var(--paper);}
+#mod-ib .msg{max-width:88%; padding:11px 14px; border-radius:14px; font-size:.95rem; line-height:1.5;}
+#mod-ib .msg.bot{background:var(--paper-2); border:1px solid var(--line); align-self:flex-start; border-bottom-left-radius:4px;}
+#mod-ib .msg.user{background:var(--ink); color:#fff; align-self:flex-end; border-bottom-right-radius:4px;}
+#mod-ib .msg.user .katex{color:#fff;}
+#mod-ib .msg .katex{font-size:1em;}
+#mod-ib .chat-suggest{display:flex; gap:7px; flex-wrap:wrap; padding:0 14px 10px; background:var(--paper);}
+#mod-ib .chat-suggest button{font-family:'Space Mono',monospace; font-size:.68rem; border:1px solid var(--line-2); background:var(--paper-2); color:var(--ink-soft); border-radius:999px; padding:6px 11px; cursor:pointer;}
+#mod-ib .chat-suggest button:hover{border-color:var(--amber); color:var(--amber-deep);}
+#mod-ib .chat-input{display:flex; gap:8px; padding:12px; border-top:1px solid var(--line); background:var(--paper-2);}
+#mod-ib .chat-input textarea{flex:1; resize:none; border:1px solid var(--line-2); border-radius:11px; padding:10px 12px; font-family:Georgia,serif; font-size:.95rem; height:44px; max-height:120px; line-height:1.4;}
+#mod-ib .chat-input textarea:focus{outline:2px solid var(--amber); border-color:var(--amber);}
+#mod-ib .chat-send{background:var(--amber); border:none; color:#fff; border-radius:11px; width:44px; cursor:pointer; font-size:1.2rem; flex:0 0 44px;}
+#mod-ib .chat-send:disabled{opacity:.5; cursor:default;}
+#mod-ib .typing{display:flex; gap:4px; padding:6px 2px;}
+#mod-ib .typing span{width:7px; height:7px; border-radius:50%; background:var(--ink-faint); animation:blink 1.2s infinite;}
+#mod-ib .typing span:nth-child(2){animation-delay:.2s;}
+#mod-ib .typing span:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,60%,100%{opacity:.25;} 30%{opacity:1;}}
+#mod-ib .footnote{font-family:'Space Mono',monospace; font-size:.7rem; color:var(--ink-faint); text-align:center; margin-top:50px; letter-spacing:.04em;}
+#mod-ib .path-toggle{display:flex; gap:8px; margin:6px 0 14px; flex-wrap:wrap;}
+#mod-ib .path-toggle .btn{flex:1; min-width:150px;}
+#mod-ib .path-toggle .btn.on{background:var(--ink); color:#fff; border-color:var(--ink);}
+#mod-ib .path-panel{display:none;}
+#mod-ib .path-panel.on{display:block;}
+#mod-ib .verdict{border-radius:10px; padding:11px 14px; font-size:.95rem; margin-top:6px;}
+#mod-ib .verdict.good{background:var(--teal-soft); color:#14543f; border:1px solid var(--teal);}
+#mod-ib .verdict.bad{background:var(--rust-soft); color:#7c2419; border:1px solid var(--rust);}
+#mod-ib .deriv-grid{display:grid; gap:10px; margin:12px 0;}
+#mod-ib .deriv-card{border:1px solid var(--line); border-radius:12px; background:var(--paper-2); overflow:hidden;}
+#mod-ib .deriv-card > button{width:100%; text-align:left; border:none; background:transparent; padding:13px 15px; cursor:pointer; font-family:Georgia,serif; font-size:1.05rem; display:flex; justify-content:space-between; align-items:center; gap:10px;}
+#mod-ib .deriv-card > button:hover{background:var(--paper);}
+#mod-ib .deriv-card .rbody{max-height:0; overflow:hidden; transition:max-height .4s ease; background:var(--blue-soft);}
+#mod-ib .deriv-card.open .rbody{max-height:260px;}
+#mod-ib .deriv-card .rbody .inner{padding:13px 15px; font-size:.95rem; color:var(--ink);}
+#mod-ib .deriv-card .tag{font-family:'Space Mono',monospace; font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:999px; white-space:nowrap;}
+#mod-ib .tag.exc{background:var(--teal-soft); color:var(--teal);}
+#mod-ib .tag.good2{background:#FDEFD6; color:var(--amber-deep);}
+#mod-ib .tag.bad{background:var(--rust-soft); color:var(--rust);}
+#mod-ib .ranker{display:grid; gap:8px; margin:12px 0;}
+#mod-ib .rank-item{display:grid; grid-template-columns:30px 1fr auto; align-items:center; gap:12px; background:var(--paper-2); border:1px solid var(--line); border-radius:11px; padding:11px 13px; transition:.18s;}
+#mod-ib .rank-item .pos{font-family:'Fraunces',serif; font-weight:700; font-size:1.2rem; color:var(--amber-deep); text-align:center;}
+#mod-ib .rank-item .lbl b{color:var(--ink);}
+#mod-ib .rank-item .lbl span{color:var(--ink-soft); font-size:.86rem;}
+#mod-ib .rank-item .mv{display:flex; flex-direction:column; gap:3px;}
+#mod-ib .rank-item .mv button{border:1px solid var(--line-2); background:var(--paper); border-radius:6px; width:32px; height:21px; cursor:pointer; line-height:1; font-size:.72rem; color:var(--ink-soft);}
+#mod-ib .rank-item .mv button:hover{border-color:var(--ink); color:var(--ink);}
+#mod-ib .rank-item.placed{border-color:var(--teal); background:var(--teal-soft);}
+#mod-ib .reveal-ilate{display:none;}
+#mod-ib .reveal-ilate.show{display:block; animation:fade .5s ease;}
+#mod-ib .ilate-letters{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:14px 0;}
+#mod-ib .ilate-letters .L{font-family:'Fraunces',serif; font-weight:700; font-size:2rem; width:58px; height:58px; display:flex; align-items:center; justify-content:center; background:var(--ink); color:#fff; border-radius:12px;}
+#mod-ib .ilate-letters .L:first-child{background:var(--amber);}
+@media (prefers-reduced-motion:reduce){#mod-ib *{animation:none !important; transition:none !important; scroll-behavior:auto !important;}}
+
+  /* ================= MÓDULO 2 · Separación de variables ================= */
+#mod-sv{
+    --ink: #1c2541;
+    --ink-soft: #4a5169;
+    --paper: #f5f2e8;
+    --paper-card: #fbf9f3;
+    --y-color: #1e7a72;
+    --y-color-soft: #e3f1ef;
+    --x-color: #6b3fa0;
+    --x-color-soft: #ece3f5;
+    --line: rgba(28,37,65,0.12);
+    --good: #1e7a4c;
+    --bad: #b3413a;
+    --shadow: 0 1px 2px rgba(28,37,65,0.06), 0 8px 24px rgba(28,37,65,0.06);
+  }
+#mod-sv *{ box-sizing:border-box; }
+#mod-sv{
+    margin:0;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0/100% 32px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0/32px 100%,
+      var(--paper);
+    background-attachment:local;
+    color: var(--ink);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+#mod-sv .wrap{
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+#mod-sv header{ margin-bottom: 36px; }
+#mod-sv .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+#mod-sv .eyebrow .dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--y-color);
+  }
+#mod-sv h1{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(32px, 5vw, 46px);
+    line-height: 1.05;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+#mod-sv h1 .split{
+    background: linear-gradient(90deg, var(--y-color) 0 50%, var(--x-color) 50% 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+#mod-sv .subtitle{
+    font-size: 16px;
+    color: var(--ink-soft);
+    max-width: 560px;
+    line-height: 1.55;
+    margin: 0;
+  }
+#mod-sv .idsig{
+    margin-top:22px;
+    display:flex;
+    align-items:center;
+    gap:0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow:hidden;
+    width:fit-content;
+    background: var(--paper-card);
+  }
+#mod-sv .idsig > div{ padding: 9px 14px; }
+#mod-sv .idsig .yside{ color: var(--y-color); background: var(--y-color-soft); }
+#mod-sv .idsig .xside{ color: var(--x-color); background: var(--x-color-soft); }
+#mod-sv .idsig .mid{ color: var(--ink-soft); }
+#mod-sv nav.tabs{
+    display:flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+    overflow-x:auto;
+  }
+#mod-sv .tab-btn{
+    appearance:none;
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-family:'Inter', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    padding: 12px 16px 14px;
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    white-space:nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+#mod-sv .tab-btn .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    opacity: .55;
+  }
+#mod-sv .tab-btn:hover{ color: var(--ink); }
+#mod-sv .tab-btn.active{
+    color: var(--ink);
+    border-bottom-color: var(--x-color);
+  }
+#mod-sv .tab-btn.active .num{ opacity: 1; color: var(--y-color); }
+#mod-sv .panel{ display:none; }
+#mod-sv .panel.active{ display:block; animation: fadeIn .28s ease; }
+@keyframes fadeIn{ from{ opacity:0; transform: translateY(4px);} to{opacity:1; transform:none;} }
+#mod-sv .card{
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 28px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+#mod-sv h2.panel-title{
+    font-family:'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+#mod-sv .panel-sub{
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0 0 20px;
+  }
+#mod-sv p{ line-height: 1.7; font-size: 15.5px; color: var(--ink); }
+#mod-sv strong{ color: var(--ink); }
+#mod-sv .eq-block{
+    background: var(--paper);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 14px 0;
+    overflow-x:auto;
+  }
+#mod-sv .metaphor{
+    display:flex;
+    gap:14px;
+    background: linear-gradient(135deg, var(--y-color-soft), var(--x-color-soft));
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-top: 18px;
+    align-items:flex-start;
+  }
+#mod-sv .metaphor .ico{ font-size: 22px; line-height:1; }
+#mod-sv .metaphor p{ margin:0; font-size: 14.5px; }
+#mod-sv .steps-list{
+    list-style:none;
+    padding:0;
+    margin: 18px 0 0;
+    counter-reset: step;
+  }
+#mod-sv .steps-list li{
+    counter-increment: step;
+    display:flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+  }
+#mod-sv .steps-list li:first-child{ border-top:none; }
+#mod-sv .steps-list li::before{
+    content: counter(step);
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight:600;
+    color: var(--paper-card);
+    background: var(--ink);
+    width: 22px; height:22px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    margin-top: 2px;
+  }
+#mod-sv .steps-list .step-body{ flex:1; }
+#mod-sv .steps-list .step-body b{ display:block; font-size:14.5px; margin-bottom:3px; }
+#mod-sv .tag{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight:600;
+  }
+#mod-sv .tag.y{ background: var(--y-color-soft); color: var(--y-color); }
+#mod-sv .tag.x{ background: var(--x-color-soft); color: var(--x-color); }
+#mod-sv .order-widget{
+    margin-top: 22px;
+    border-top: 1px solid var(--line);
+    padding-top: 22px;
+  }
+#mod-sv .order-widget h3{
+    font-family:'Fraunces', serif;
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+#mod-sv .order-hint{
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+  }
+#mod-sv .order-cards{
+    display:grid;
+    gap: 10px;
+  }
+#mod-sv .order-card{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    text-align:left;
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor:pointer;
+    font-family:'Inter', sans-serif;
+    font-size: 14.5px;
+    color: var(--ink);
+    transition: border-color .15s ease, transform .1s ease;
+  }
+#mod-sv .order-card:hover:not(.locked){ border-color: var(--ink-soft); }
+#mod-sv .order-card:active:not(.locked){ transform: scale(0.995); }
+#mod-sv .order-card .badge{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight:700;
+    width: 26px; height:26px;
+    border-radius:50%;
+    border: 1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    color: var(--ink-soft);
+  }
+#mod-sv .order-card.picked .badge{
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper-card);
+  }
+#mod-sv .order-card .content{ flex:1; }
+#mod-sv .order-card.correct{ border-color: var(--good); background: #eef7f0; }
+#mod-sv .order-card.correct .badge{ background: var(--good); border-color: var(--good); }
+#mod-sv .order-card.incorrect{ border-color: var(--bad); background: #fbeeed; }
+#mod-sv .order-card.incorrect .badge{ background: var(--bad); border-color: var(--bad); }
+#mod-sv .order-controls{
+    display:flex;
+    gap:10px;
+    margin-top: 16px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+#mod-sv button.action{
+    appearance:none;
+    border:none;
+    cursor:pointer;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size: 13.5px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    transition: opacity .15s ease, transform .1s ease;
+  }
+#mod-sv button.action:active{ transform: scale(0.98); }
+#mod-sv button.action:disabled{ opacity:.4; cursor:not-allowed; }
+#mod-sv button.action.primary{ background: var(--ink); color: var(--paper-card); }
+#mod-sv button.action.ghost{ background:transparent; border: 1.5px solid var(--line); color: var(--ink); }
+#mod-sv .feedback{
+    font-size: 13.5px;
+    font-weight:600;
+    padding: 4px 0;
+  }
+#mod-sv .feedback.good{ color: var(--good); }
+#mod-sv .feedback.bad{ color: var(--bad); }
+#mod-sv .final-answer{
+    margin-top: 20px;
+  }
+#mod-sv .final-answer summary{
+    cursor:pointer;
+    font-weight:600;
+    font-size: 14.5px;
+    color: var(--x-color);
+    list-style:none;
+  }
+#mod-sv .final-answer summary::-webkit-details-marker{ display:none; }
+#mod-sv .final-answer summary::before{
+    content: '▸ ';
+  }
+#mod-sv .final-answer[open] summary::before{ content: '▾ '; }
+#mod-sv .final-answer .rev{
+    margin-top: 12px;
+    padding: 14px 16px;
+    background: var(--x-color-soft);
+    border-radius: 10px;
+  }
+#mod-sv .formula-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+  }
+@media (max-width:620px){#mod-sv .formula-grid{ grid-template-columns: 1fr; }}
+#mod-sv .formula-card{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+#mod-sv .formula-card .lbl{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color: var(--ink-soft);
+    margin-bottom:8px;
+  }
+#mod-sv table.cases{
+    width:100%;
+    border-collapse:collapse;
+    margin-top: 14px;
+    font-size: 14px;
+  }
+#mod-sv table.cases th{
+    text-align:left;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color: var(--ink-soft);
+    padding: 8px 10px;
+    border-bottom: 1.5px solid var(--line);
+  }
+#mod-sv table.cases td{
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align:top;
+  }
+#mod-sv table.cases tr:last-child td{ border-bottom:none; }
+#mod-sv footer{
+    margin-top: 40px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    text-align:center;
+  }
+  /* ---------- Ajustes de integración ---------- */
+  #mod-ib header.topbar{top:48px;}
+</style>
+</head>
+<body>
+
+<div id="gbar" role="tablist" aria-label="Módulos">
+  <span class="gt">Cálculo · CCH</span>
+  <button class="on" data-mod="mod-ib" role="tab">∫ Integración por partes</button>
+  <button data-mod="mod-sv" role="tab">dy/dx · Separación de variables</button>
+</div>
+
+<!-- ============ MÓDULO 1 · Integración por partes ============ -->
+<div class="module on" id="mod-ib">
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">CCH · UNAM &nbsp;|&nbsp; <b>El trueque de las integrales</b></span>
+  </div>
+  <nav class="nav" id="nav">
+    <button data-go="reto" class="active"><span class="n">00</span>El reto</button>
+    <button data-go="descubre"><span class="n">01</span>Descúbrela</button>
+    <button data-go="ilate"><span class="n">02</span>¿Cuál es u?</button>
+    <button data-go="resuelve"><span class="n">03</span>El problema</button>
+    <button data-go="ejemplos"><span class="n">04</span>Ejemplos</button>
+    <button data-go="quiz"><span class="n">05</span>Autoevaluación</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============ 00 RETO ============ -->
+<section class="panel active" id="reto">
+  <div class="eyebrow">Pág. 52 · Problema 2 · Cálculo Diferencial e Integral II</div>
+  <h1>¿Cómo le entras<br>a <em>esta</em> integral?</h1>
+  <div class="formula-box amber hero-eq">
+    $$\displaystyle\int_{1}^{e} x^{2}\,\ln x^{2}\;dx$$
+  </div>
+  <p class="lead">No es una integral de fórmula directa. No hay regla de la cadena que te salve, ni una sustitución obvia que la limpie de un golpe. Adentro hay <b class="ink">dos personajes que conviven</b>: un polinomio (<span class="mono">x²</span>) y un logaritmo (<span class="mono">ln x²</span>).</p>
+
+  <p>Cuando dos funciones distintas están multiplicándose dentro de una integral, casi siempre la herramienta es la misma. Pero antes de darte el nombre y la fórmula, vamos a hacer algo mejor: <b class="ink">la vas a inventar tú</b>.</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">La gran idea, en una imagen</h3>
+    <p style="margin-top:0">Integrar por partes es un <b class="ink">trueque</b>. Cambias una integral que no sabes resolver por otra que (con suerte) sí.</p>
+    <div class="trade">
+      <div class="side hard">
+        <small>Lo que no puedo</small>
+        <span>$\int u\,dv$</span>
+      </div>
+      <div class="swap">⇄</div>
+      <div class="side easy">
+        <small>Lo que sí puedo</small>
+        <span>$uv-\int v\,du$</span>
+      </div>
+    </div>
+    <p style="margin-bottom:0; font-size:.92rem;">El secreto está en <b class="ink">qué le toca a cada quien</b> en el trueque: a quién derivas y a quién integras. Eso lo decide ILATE. Sigue el recorrido y lo armas pieza por pieza.</p>
+  </div>
+
+  <div class="next-row">
+    <span></span>
+    <button class="btn amber" data-go="descubre">Empezar a descubrirla →</button>
+  </div>
+</section>
+
+<!-- ============ 01 DESCUBRE ============ -->
+<section class="panel" id="descubre">
+  <div class="eyebrow">Paso 01 · Inventa la fórmula</div>
+  <h2>No la memorices: dedúcela de algo que ya sabes</h2>
+  <p class="lead">La integración por partes no cae del cielo. Sale, paso a paso, de la <b class="ink">regla del producto</b> que ya usas para derivar. Síguela con calma.</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">Paso 1 · Lo que ya conoces</h3>
+    <p>Para derivar un producto de dos funciones $u$ y $v$:</p>
+    <div class="formula-box">$$\big(u\,v\big)' = u'\,v + u\,v'$$</div>
+    <p style="margin-bottom:0">Pura regla del producto. Nada nuevo… todavía.</p>
+  </div>
+
+  <div class="reveal card" data-reveal>
+    <button class="btn" data-revbtn>▸ Paso 2 · Integra de los dos lados</button>
+    <div class="body">
+      <p>Si dos cosas son iguales, sus integrales también. Integramos respecto a $x$ en ambos lados:</p>
+      <div class="formula-box">$$\int (u\,v)'\,dx = \int u'\,v\,dx + \int u\,v'\,dx$$</div>
+      <p style="margin-bottom:0">La izquierda es fácil: <b class="ink">integrar una derivada te regresa la función original</b>. Entonces $\int (uv)'\,dx = uv$.</p>
+    </div>
+  </div>
+
+  <div class="reveal card" data-reveal>
+    <button class="btn" data-revbtn>▸ Paso 3 · Sustituye y despeja</button>
+    <div class="body">
+      <p>Reemplazamos esa parte:</p>
+      <div class="formula-box">$$u\,v = \int u'\,v\,dx + \int u\,v'\,dx$$</div>
+      <p>Ahora despejamos la integral que nos interesa (la de la derecha):</p>
+      <div class="formula-box amber">$$\int u\,v'\,dx = u\,v - \int u'\,v\,dx$$</div>
+      <p style="margin-bottom:0"><b class="ink">¡Esa es la fórmula!</b> La acabas de deducir tú, sin memorizar.</p>
+    </div>
+  </div>
+
+  <div class="reveal card" data-reveal>
+    <button class="btn" data-revbtn>▸ Paso 4 · La forma bonita (la que vas a usar)</button>
+    <div class="body">
+      <p>Para que sea cómoda, renombramos: si llamamos $dv = v'\,dx$ y $du = u'\,dx$, queda compactita:</p>
+      <div class="formula-box amber" style="font-size:1.25rem">$$\boxed{\;\int u\,dv = u\,v - \int v\,du\;}$$</div>
+      <p>Léela como el trueque del inicio: la integral de la izquierda <span class="pill rust">difícil</span> se cambia por $uv$ menos otra integral <span class="pill teal">ojalá más fácil</span>.</p>
+      <p style="margin-bottom:0">Y aquí aparece <b class="ink">la única decisión real</b> de todo el método: de las dos funciones del producto, ¿a cuál llamo $u$ (la que voy a <b>derivar</b>) y a cuál llamo $dv$ (la que voy a <b>integrar</b>)? Esa elección lo es todo… y en el siguiente paso vas a <b class="ink">deducir tú mismo</b> cómo acertarla siempre, sin que nadie te dé la regla.</p>
+    </div>
+  </div>
+
+  <div class="next-row">
+    <button class="btn" data-go="reto">← El reto</button>
+    <button class="btn amber" data-go="ilate">Aprender a elegir la u →</button>
+  </div>
+</section>
+
+<!-- ============ 02 DESCUBRIR u ============ -->
+<section class="panel" id="ilate">
+  <div class="eyebrow">Paso 02 · Tú construyes el criterio</div>
+  <h2>¿A cuál le toca ser <em>u</em>?</h2>
+  <p class="lead">La fórmula ya la tienes. Falta la única decisión del método: de las dos funciones, ¿a cuál derivas (<em>u</em>) y a cuál integras (<em>dv</em>)? <b class="ink">No te voy a dar ninguna regla.</b> La vas a descubrir tú, probando.</p>
+
+  <!-- Experimento 1 -->
+  <div class="card">
+    <h3 style="margin-top:0">Experimento 1 · El mismo problema, dos repartos</h3>
+    <p>Tomemos $\int x\,e^{x}\,dx$. Solo hay dos formas de repartir los papeles. Prueba las dos y fíjate en qué integral te queda <b>después</b> del trueque.</p>
+    <div class="path-toggle">
+      <button class="btn on" id="pathA-btn">Reparto A · u = x</button>
+      <button class="btn" id="pathB-btn">Reparto B · u = eˣ</button>
+    </div>
+    <div class="path-panel on" id="pathA">
+      <table class="uvtable"><tr><td class="h">u = x</td><td class="h">dv = eˣ dx</td></tr><tr><td>$du=dx$</td><td>$v=e^{x}$</td></tr></table>
+      <div class="formula-box">$$\int x e^{x}\,dx = x e^{x} - \int e^{x}\,dx$$</div>
+      <div class="verdict good">✓ La integral que queda, $\int e^{x}dx$, es <b>inmediata</b>. El trueque te dejó algo <b>más fácil</b> que el original. ¡Buen reparto!</div>
+    </div>
+    <div class="path-panel" id="pathB">
+      <table class="uvtable"><tr><td class="h">u = eˣ</td><td class="h">dv = x dx</td></tr><tr><td>$du=e^{x}dx$</td><td>$v=\frac{x^{2}}{2}$</td></tr></table>
+      <div class="formula-box">$$\int x e^{x}\,dx = \frac{x^{2}}{2}e^{x} - \int \frac{x^{2}}{2}e^{x}\,dx$$</div>
+      <div class="verdict bad">✗ La integral que queda trae $x^{2}$: el polinomio <b>creció</b> de grado. El trueque te dejó algo <b>más difícil</b> que el original. Reparto fallido.</div>
+    </div>
+  </div>
+
+  <!-- Principio emerge -->
+  <div class="reveal card" data-reveal>
+    <button class="btn" data-revbtn>▸ ¿Por qué uno sirvió y el otro no? Ábrelo cuando lo intuyas</button>
+    <div class="body">
+      <p>Fíjate qué le pasó a la función que elegimos como $u$ <b>al derivarla</b>:</p>
+      <ul style="color:var(--ink-soft)">
+        <li>En el reparto bueno, $u=x$ se derivó y se volvió $1$: <b class="ink">se simplificó</b> y borró el polinomio.</li>
+        <li>En el malo, $u=e^{x}$ al derivar <b class="ink">siguió igual</b>, y encima tocó integrar $x$, que <b>subió</b> de grado.</li>
+      </ul>
+      <div class="formula-box amber" style="font-size:1.08rem">El buen $u$ es el que <b>se hace más simple al derivarlo</b>.</div>
+      <p style="margin-bottom:0">Ese es <b class="ink">el criterio</b>, y lo dedujiste tú. No lo memorices: pruébalo con todas las familias de funciones aquí abajo.</p>
+    </div>
+  </div>
+
+  <!-- Experimento 2 -->
+  <div class="card">
+    <h3 style="margin-top:0">Experimento 2 · ¿Cuánto se simplifica cada familia al derivar?</h3>
+    <p>Si el criterio es "que se simplifique al derivar", pongámoslo a prueba con una función de cada tipo. Deriva cada una y juzga tú qué tan buena $u$ sería.</p>
+    <div class="deriv-grid" id="derivGrid">
+      <div class="deriv-card">
+        <button>$\arctan x$ <span style="color:var(--ink-faint);font-size:.85rem">derivar ▾</span></button>
+        <div class="rbody"><div class="inner">$\dfrac{d}{dx}\arctan x = \dfrac{1}{1+x^{2}}$ &nbsp; <span class="tag exc">excelente u</span><br>La inversa <b>desaparece</b> y queda una fracción algebraica sencilla.</div></div>
+      </div>
+      <div class="deriv-card">
+        <button>$\ln x$ <span style="color:var(--ink-faint);font-size:.85rem">derivar ▾</span></button>
+        <div class="rbody"><div class="inner">$\dfrac{d}{dx}\ln x = \dfrac{1}{x}$ &nbsp; <span class="tag exc">excelente u</span><br>El logaritmo <b>desaparece</b> y queda algo algebraico.</div></div>
+      </div>
+      <div class="deriv-card">
+        <button>$x^{2}$ <span style="color:var(--ink-faint);font-size:.85rem">derivar ▾</span></button>
+        <div class="rbody"><div class="inner">$x^{2}\to 2x\to 2\to 0$ &nbsp; <span class="tag good2">buena u</span><br><b>Baja de grado</b> en cada derivada hasta morir.</div></div>
+      </div>
+      <div class="deriv-card">
+        <button>$\cos x$ <span style="color:var(--ink-faint);font-size:.85rem">derivar ▾</span></button>
+        <div class="rbody"><div class="inner">$\cos x\to -\operatorname{sen}x\to -\cos x\to\dots$ &nbsp; <span class="tag bad">mala u</span><br>Solo se vuelve otra trig: <b>gira en círculo</b>, nunca se simplifica.</div></div>
+      </div>
+      <div class="deriv-card">
+        <button>$e^{x}$ <span style="color:var(--ink-faint);font-size:.85rem">derivar ▾</span></button>
+        <div class="rbody"><div class="inner">$\dfrac{d}{dx}e^{x} = e^{x}$ &nbsp; <span class="tag bad">la peor u</span><br><b>No cambia jamás.</b> Por eso conviene dejarla como $dv$: se integra solita.</div></div>
+      </div>
+    </div>
+    <p style="margin-bottom:0; font-size:.92rem;">¿Ves el patrón? Unas <b>desaparecen</b>, otras <b>bajan de grado</b>, otras <b>giran</b> y una <b>no cambia</b>. Eso ya te da un orden.</p>
+  </div>
+
+  <!-- Experimento 3 -->
+  <div class="card">
+    <h3 style="margin-top:0">Experimento 3 · Arma tú el orden de prioridad</h3>
+    <p>Ordénalas de <b>la mejor $u$</b> (la que más se simplifica) arriba, a <b>la peor</b> abajo. Usa las flechas. Cuando creas que ya está, verifícalo.</p>
+    <div class="ranker" id="ranker"></div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <button class="btn primary" id="rankCheck">Verificar mi orden</button>
+      <button class="btn" id="rankShow">Mostrarme el orden correcto</button>
+    </div>
+    <div id="rankFb" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- Revelación: aparece tras armar el orden -->
+  <div class="reveal-ilate card" id="ilateReveal" style="background:var(--amber-soft); border-color:var(--amber);">
+    <div class="eyebrow" style="margin-top:0">El premio · ya tenía nombre</div>
+    <h3 style="margin-top:4px; color:var(--amber-deep)">Eso que acabas de deducir se llama ILATE</h3>
+    <p style="color:var(--amber-deep)">Toma la inicial de cada familia, en el orden que tú armaste, de la mejor $u$ a la peor:</p>
+    <div class="ilate-letters">
+      <span class="L">I</span><span class="L">L</span><span class="L">A</span><span class="L">T</span><span class="L">E</span>
+    </div>
+    <p style="margin-bottom:0; color:var(--amber-deep)"><b>I</b>nversas · <b>L</b>ogarítmicas · <b>A</b>lgebraicas · <b>T</b>rigonométricas · <b>E</b>xponenciales. ILATE no es una regla que alguien te impuso para memorizar: es solo una palabra para <b>recordar el criterio que ya entendiste</b>. Quien aparezca más arriba, ese es tu $u$. <span class="pill blue" style="background:#fff;">En algunos libros la verás como LIATE: es lo mismo, solo intercambian I y L, que casi nunca compiten.</span></p>
+  </div>
+
+  <h3>Ahora aplícalo: tú eliges la <em>u</em></h3>
+  <p>Usa el criterio que dedujiste (gana como $u$ la que más se simplifica al derivar). Mira el integrando y decide. Te digo al instante si acertaste y por qué.</p>
+
+  <div class="lab" id="lab">
+    <div class="lab-meta">
+      <span id="labcount">Caso 1 de 4</span>
+      <span id="labscore">Aciertos: 0</span>
+    </div>
+    <div class="q" id="labq"></div>
+    <div class="choices" id="labchoices"></div>
+    <div class="fb" id="labfb"></div>
+    <div style="text-align:right; margin-top:14px;">
+      <button class="btn" id="labnext" style="display:none">Siguiente caso →</button>
+    </div>
+  </div>
+
+  <div class="next-row">
+    <button class="btn" data-go="descubre">← Descúbrela</button>
+    <button class="btn amber" data-go="resuelve">Resolver el problema del reto →</button>
+  </div>
+</section>
+
+<!-- ============ 03 RESUELVE ============ -->
+<section class="panel" id="resuelve">
+  <div class="eyebrow">Paso 03 · El problema del reto, resuelto</div>
+  <h2>Volvamos a $\displaystyle\int_{1}^{e} x^{2}\ln x^{2}\,dx$</h2>
+  <p class="lead">Ahora ya tienes todo: la fórmula que dedujiste y ILATE para elegir. Intenta cada paso <b class="ink">antes</b> de abrirlo.</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">Paso 0 · Una limpieza con propiedades del logaritmo</h3>
+    <p>Antes de partes, conviene simplificar. Por la propiedad $\ln a^{n}=n\ln a$:</p>
+    <div class="formula-box">$$\ln x^{2} = 2\ln x \quad\Rightarrow\quad \int_{1}^{e} x^{2}\ln x^{2}\,dx = 2\int_{1}^{e} x^{2}\ln x\,dx$$</div>
+    <p style="margin-bottom:0">Sacamos el $2$ y nos quedamos con un integrando más limpio: $x^{2}\ln x$. Resolvemos $\displaystyle\int x^{2}\ln x\,dx$ y al final multiplicamos por $2$ y evaluamos de $1$ a $e$.</p>
+  </div>
+
+  <div class="reveal card" data-reveal>
+    <button class="btn" data-revbtn>▸ Paso 1 · Elige u y dv con ILATE</button>
+    <div class="body">
+      <p>En $x^{2}\ln x$ conviven una <b>L</b>ogarítmica ($\ln x$) y una <b>A</b>lgebraica ($x^{2}$). En la fila ILATE, <b class="ink">L va antes que A</b>. Entonces:</p>
+      <table class="uvtable">
+        <tr><td class="h">u = ln x</td><td class="h">dv = x² dx</td></tr>
+        <tr><td>derivamos</td><td>integramos</td></tr>
+        <tr><td>$du=\dfrac{1}{x}\,dx$</td><td>$v=\dfrac{x^{3}}{3}$</td></tr>
+      </table>
+      <p style="margin-bottom:0">Fíjate: al derivar, $\ln x$ se convirtió en $\frac1x$ (más simple). Esa es justo la razón de ILATE.</p>
+    </div>
+  </div>
+
+  <div class="reveal card" data-reveal>
+    <button class="btn" data-revbtn>▸ Paso 2 · Aplica la fórmula del trueque</button>
+    <div class="body">
+      <p>Sustituimos en $\int u\,dv = uv - \int v\,du$:</p>
+      <div class="formula-box">$$\int x^{2}\ln x\,dx = \underbrace{\frac{x^{3}}{3}\ln x}_{uv} - \int \frac{x^{3}}{3}\cdot\frac{1}{x}\,dx$$</div>
+      <p>Esa nueva integral de la derecha es <b class="ink">fácil</b> (el trueque funcionó): $\frac{x^3}{3}\cdot\frac1x=\frac{x^2}{3}$.</p>
+      <div class="formula-box">$$= \frac{x^{3}}{3}\ln x - \frac{1}{3}\int x^{2}\,dx = \frac{x^{3}}{3}\ln x - \frac{x^{3}}{9} + C$$</div>
+    </div>
+  </div>
+
+  <div class="reveal card" data-reveal>
+    <button class="btn" data-revbtn>▸ Paso 3 · Regresa el 2 y evalúa de 1 a e</button>
+    <div class="body">
+      <p>Multiplicamos por $2$ y aplicamos el Teorema Fundamental entre $1$ y $e$:</p>
+      <div class="formula-box">$$2\left[\frac{x^{3}}{3}\ln x - \frac{x^{3}}{9}\right]_{1}^{e}$$</div>
+      <p>En $x=e$ (recuerda $\ln e = 1$): &nbsp; $\dfrac{e^{3}}{3}(1) - \dfrac{e^{3}}{9} = \dfrac{3e^{3}-e^{3}}{9} = \dfrac{2e^{3}}{9}$.</p>
+      <p>En $x=1$ (recuerda $\ln 1 = 0$): &nbsp; $\dfrac{1}{3}(0) - \dfrac{1}{9} = -\dfrac{1}{9}$.</p>
+      <div class="formula-box">$$2\left[\frac{2e^{3}}{9}-\left(-\frac{1}{9}\right)\right] = 2\cdot\frac{2e^{3}+1}{9}$$</div>
+    </div>
+  </div>
+
+  <div class="reveal card" data-reveal>
+    <button class="btn amber" data-revbtn>▸ Resultado final</button>
+    <div class="body">
+      <div class="formula-box amber" style="font-size:1.3rem">$$\int_{1}^{e} x^{2}\ln x^{2}\,dx = \frac{4e^{3}+2}{9} \approx 9.15$$</div>
+      <p style="margin-bottom:0">Una integral que al principio parecía intratable se volvió tres pasos rutinarios. Eso es integración por partes: <b class="ink">un trueque bien elegido</b>.</p>
+    </div>
+  </div>
+
+  <div class="next-row">
+    <button class="btn" data-go="ilate">← ILATE</button>
+    <button class="btn amber" data-go="ejemplos">Ver más ejemplos →</button>
+  </div>
+</section>
+
+<!-- ============ 04 EJEMPLOS ============ -->
+<section class="panel" id="ejemplos">
+  <div class="eyebrow">Paso 04 · Galería de casos</div>
+  <h2>Seis ejemplos, seis situaciones distintas</h2>
+  <p class="lead">No todas las integrales por partes se ven igual. Aquí están los tipos que vas a encontrar en tu examen, del más simple al más sorprendente. Cambia de pestaña.</p>
+
+  <div class="ex-tabs" id="exTabs">
+    <div class="ex-tab active" data-ex="0"><small>A · básico</small><span>$\int xe^{x}dx$</span></div>
+    <div class="ex-tab" data-ex="1"><small>B · trig</small><span>$\int x\cos x\,dx$</span></div>
+    <div class="ex-tab" data-ex="2"><small>C · truco</small><span>$\int \ln x\,dx$</span></div>
+    <div class="ex-tab" data-ex="3"><small>D · repetido</small><span>$\int x^{2}e^{x}dx$</span></div>
+    <div class="ex-tab" data-ex="4"><small>E · cíclico</small><span>$\int e^{x}\operatorname{sen}x\,dx$</span></div>
+    <div class="ex-tab" data-ex="5"><small>F · inversa</small><span>$\int \arctan x\,dx$</span></div>
+  </div>
+
+  <!-- A -->
+  <div class="ex-body active card" data-exbody="0">
+    <h3 style="margin-top:0">A · El básico: $\int x\,e^{x}\,dx$ <span class="pill amber">A vs E</span></h3>
+    <p>Conviven una <b>A</b>lgebraica ($x$) y una <b>E</b>xponencial ($e^x$). En ILATE, A va antes que E → $u=x$.</p>
+    <table class="uvtable"><tr><td class="h">u = x</td><td class="h">dv = eˣ dx</td></tr><tr><td>$du=dx$</td><td>$v=e^{x}$</td></tr></table>
+    <div class="formula-box">$$xe^{x}-\int e^{x}\,dx = xe^{x}-e^{x}+C = e^{x}(x-1)+C$$</div>
+    <p style="margin-bottom:0; font-size:.92rem;">La derecha quedó trivial. Si hubieras elegido al revés ($u=e^x$), la integral se complica en vez de simplificarse: ese es el examen de ILATE.</p>
+  </div>
+
+  <!-- B -->
+  <div class="ex-body card" data-exbody="1">
+    <h3 style="margin-top:0">B · Con trigonométrica: $\int x\cos x\,dx$ <span class="pill amber">A vs T</span></h3>
+    <p><b>A</b>lgebraica ($x$) vs <b>T</b>rigonométrica ($\cos x$). A va antes → $u=x$.</p>
+    <table class="uvtable"><tr><td class="h">u = x</td><td class="h">dv = cos x dx</td></tr><tr><td>$du=dx$</td><td>$v=\operatorname{sen}x$</td></tr></table>
+    <div class="formula-box">$$x\operatorname{sen}x-\int \operatorname{sen}x\,dx = x\operatorname{sen}x+\cos x+C$$</div>
+    <p style="margin-bottom:0; font-size:.92rem;">Derivar $x$ lo vuelve $1$ y mata el polinomio. Por eso el algebraico casi siempre es $u$ frente a trig o exponencial.</p>
+  </div>
+
+  <!-- C -->
+  <div class="ex-body card" data-exbody="2">
+    <h3 style="margin-top:0">C · El truco del "dv = dx": $\int \ln x\,dx$ <span class="pill blue">una sola función</span></h3>
+    <p>Parece imposible: solo hay una función. Truco: toma $u=\ln x$ y deja $dv=dx$ (¡el $dx$ siempre está ahí!).</p>
+    <table class="uvtable"><tr><td class="h">u = ln x</td><td class="h">dv = dx</td></tr><tr><td>$du=\frac{1}{x}dx$</td><td>$v=x$</td></tr></table>
+    <div class="formula-box">$$x\ln x-\int x\cdot\frac{1}{x}\,dx = x\ln x-\int dx = x\ln x - x + C$$</div>
+    <p style="margin-bottom:0; font-size:.92rem;">Memoriza este movimiento: sirve igual para $\int \arcsin x\,dx$, $\int \arctan x\,dx$, etc.</p>
+  </div>
+
+  <!-- D -->
+  <div class="ex-body card" data-exbody="3">
+    <h3 style="margin-top:0">D · Partes repetidas: $\int x^{2}e^{x}\,dx$ <span class="pill amber">dos rondas</span></h3>
+    <p>$u=x^{2}$, $dv=e^{x}dx$. Pero al derivar $x^2$ baja a $2x$, no a constante: hay que aplicar partes <b>otra vez</b>.</p>
+    <table class="uvtable"><tr><td class="h">u = x²</td><td class="h">dv = eˣ dx</td></tr><tr><td>$du=2x\,dx$</td><td>$v=e^{x}$</td></tr></table>
+    <div class="formula-box">$$x^{2}e^{x}-\int 2x e^{x}\,dx = x^{2}e^{x}-2\int x e^{x}\,dx$$</div>
+    <p>Y $\int xe^{x}dx = e^{x}(x-1)$ ya lo hiciste en el ejemplo A. Sustituyendo:</p>
+    <div class="formula-box amber">$$x^{2}e^{x}-2e^{x}(x-1)+C = e^{x}\big(x^{2}-2x+2\big)+C$$</div>
+    <p style="margin-bottom:0; font-size:.92rem;">Regla de dedo: si el polinomio es de grado $n$, aplicarás partes $n$ veces.</p>
+  </div>
+
+  <!-- E -->
+  <div class="ex-body card" data-exbody="4">
+    <h3 style="margin-top:0">E · El caso cíclico: $\int e^{x}\operatorname{sen}x\,dx$ <span class="pill rust">vuelve a sí misma</span></h3>
+    <p>Aquí pasa algo raro: aplicas partes dos veces y <b>reaparece la integral original</b>. En vez de frustrarte, la despejas como una ecuación. Llamemos $I$ a la integral.</p>
+    <div class="formula-box">$$I = e^{x}\operatorname{sen}x - \int e^{x}\cos x\,dx$$</div>
+    <p>Aplicas partes otra vez a $\int e^{x}\cos x\,dx = e^{x}\cos x + I$. Sustituyendo:</p>
+    <div class="formula-box">$$I = e^{x}\operatorname{sen}x - e^{x}\cos x - I \;\Rightarrow\; 2I = e^{x}(\operatorname{sen}x-\cos x)$$</div>
+    <div class="formula-box amber">$$I = \frac{e^{x}(\operatorname{sen}x-\cos x)}{2}+C$$</div>
+    <p style="margin-bottom:0; font-size:.92rem;">La clave: ser consistente con la elección de $u$ en ambas rondas (siempre el trig, o siempre la exponencial).</p>
+  </div>
+
+  <!-- F -->
+  <div class="ex-body card" data-exbody="5">
+    <h3 style="margin-top:0">F · Inversa trigonométrica: $\int \arctan x\,dx$ <span class="pill blue">I gana siempre</span></h3>
+    <p>La <b>I</b> de ILATE va primerísima. Igual que con $\ln x$, usamos el truco $dv=dx$.</p>
+    <table class="uvtable"><tr><td class="h">u = arctan x</td><td class="h">dv = dx</td></tr><tr><td>$du=\frac{1}{1+x^{2}}dx$</td><td>$v=x$</td></tr></table>
+    <div class="formula-box">$$x\arctan x - \int \frac{x}{1+x^{2}}\,dx$$</div>
+    <p>Esa integral sale con una sustitución rápida ($w=1+x^2$):</p>
+    <div class="formula-box amber">$$x\arctan x - \frac{1}{2}\ln(1+x^{2})+C$$</div>
+    <p style="margin-bottom:0; font-size:.92rem;">Partes muchas veces es solo el primer paso; después aparecen sustituciones u otras técnicas.</p>
+  </div>
+
+  <div class="next-row">
+    <button class="btn" data-go="resuelve">← El problema</button>
+    <button class="btn amber" data-go="quiz">Ponerme a prueba →</button>
+  </div>
+</section>
+
+<!-- ============ 05 QUIZ ============ -->
+<section class="panel" id="quiz">
+  <div class="eyebrow">Paso 05 · Autoevaluación</div>
+  <h2>¿Ya la haces tuya?</h2>
+  <p class="lead">Seis preguntas. Cada una te da retroalimentación al instante, aciertes o no. No es para una calificación: es para que veas qué dominas y qué repasar. Si te atoras, abre a <b class="ink">Tutora de Cálculo</b> (botón abajo a la derecha).</p>
+
+  <div class="card" id="quizCard"><!-- preguntas inyectadas por JS --></div>
+
+  <div class="scorebar">
+    <span>Tu avance</span>
+    <span><b id="scoreNum">0</b> / 6 correctas</span>
+  </div>
+
+  <div class="next-row">
+    <button class="btn" data-go="ejemplos">← Ejemplos</button>
+    <button class="btn" id="resetQuiz">↺ Reiniciar autoevaluación</button>
+  </div>
+
+  <p class="footnote">Construido para la práctica docente · CDI II · Modelo CCH · Aprender haciendo, no memorizando</p>
+</section>
+
+</main>
+
+<!-- ============ PROFE CÁLCULA ============ -->
+<button id="fab"><span class="dot"></span> Tutora de Cálculo</button>
+<div id="chat" aria-label="Tutora de Cálculo">
+  <div class="chat-head">
+    <div class="av">∫</div>
+    <div class="meta"><b>Tutora de Cálculo</b><span>Integración por partes</span></div>
+    <button class="x" id="chatClose" aria-label="Cerrar">×</button>
+  </div>
+  <div class="chat-log" id="chatLog"></div>
+  <div class="chat-suggest" id="chatSuggest">
+    <button>¿Por qué L va antes que A?</button>
+    <button>No entiendo el caso cíclico</button>
+    <button>Dame una pista, no la respuesta</button>
+  </div>
+  <div class="chat-input">
+    <textarea id="chatText" placeholder="Pregúntame lo que sea de partes…" rows="1"></textarea>
+    <button class="chat-send" id="chatSend" aria-label="Enviar">↑</button>
+  </div>
+</div>
+</div>
+
+<!-- ============ MÓDULO 2 · Separación de variables ============ -->
+<div class="module" id="mod-sv">
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow"><span class="dot"></span>Ecuaciones diferenciales · Métodos de solución</div>
+    <h1>Separación de <span class="split">Variables</span></h1>
+    <p class="subtitle">Cómo resolver ecuaciones donde puedes mandar todo lo que depende de <em>y</em> a un lado y todo lo que depende de <em>x</em> al otro.</p>
+    <div class="idsig">
+      <div class="yside">g(y) dy</div>
+      <div class="mid">=</div>
+      <div class="xside">f(x) dx</div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="t1"><span class="num">01</span>El método de separación de variables</button>
+    <button class="tab-btn" data-tab="t2"><span class="num">02</span>Ejemplo 1</button>
+    <button class="tab-btn" data-tab="t3"><span class="num">03</span>Ejemplo 2</button>
+    <button class="tab-btn" data-tab="t4"><span class="num">04</span>Resumen y fórmulas</button>
+  </nav>
+
+  <!-- ================= TAB 1 ================= -->
+  <section class="panel active" id="t1">
+    <div class="card">
+      <h2 class="panel-title">La idea, sin tanto tecnicismo</h2>
+      <p class="panel-sub">Qué tipo de ecuación resuelve este método y por qué funciona.</p>
+
+      <p>
+        Una ecuación diferencial nos dice cómo cambia <span class="tag y">y</span> respecto a <span class="tag x">x</span>. A veces esa razón de cambio viene "mezclada": una parte depende de <em>x</em> y otra parte depende de <em>y</em>, multiplicadas entre sí:
+      </p>
+
+      <div class="eq-block">\[ \frac{dy}{dx} = f(x)\,g(y) \]</div>
+
+      <p>
+        La observación clave es que, como es una multiplicación y no una suma, <strong>podemos separar</strong> los dos factores usando álgebra sencilla: dividimos ambos lados entre <em>g(y)</em> y "movemos" el <em>dx</em> como si fuera un factor más.
+      </p>
+
+      <div class="metaphor">
+        <div class="ico">🧺</div>
+        <p><strong>Piénsalo como separar ropa antes de lavarla.</strong> Tienes una ecuación con "prendas de y" y "prendas de x" revueltas. Antes de poder trabajar con cada una (integrarla), primero las separas en dos montones: todo lo de <em>y</em> junto con <em>dy</em> de un lado, todo lo de <em>x</em> junto con <em>dx</em> del otro.</p>
+      </div>
+
+      <ol class="steps-list">
+        <li>
+          <div class="step-body">
+            <b>Verifica que sea separable</b>
+            La ecuación debe poder escribirse como <span style="white-space:nowrap">\( \frac{dy}{dx} = f(x)g(y) \)</span>, es decir, el lado derecho debe ser un producto de una función solo de <em>x</em> por una función solo de <em>y</em> (o alguno de los dos puede ser simplemente 1).
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <b>Separa las variables</b>
+            Divide ambos lados entre <em>g(y)</em> y multiplica por <em>dx</em>: <span style="white-space:nowrap">\( \frac{dy}{g(y)} = f(x)\,dx \)</span>. Ahora cada lado depende de una sola variable.
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <b>Integra ambos lados por separado</b>
+            \( \displaystyle\int \frac{dy}{g(y)} = \int f(x)\,dx \). Como son integrales distintas, solo hace falta una constante de integración en total.
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <b>Resuelve las integrales</b>
+            Obtienes una relación entre <em>y</em> y <em>x</em> (más una constante <em>C</em>). Esto es la <strong>solución implícita</strong>.
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <b>Despeja y, si es posible</b>
+            Si puedes escribir <em>y</em> en términos de <em>x</em> de forma explícita, lo haces. Si no, la solución implícita también es una respuesta válida.
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= TAB 2 ================= -->
+  <section class="panel" id="t2">
+    <div class="card">
+      <h2 class="panel-title">Ejemplo 1</h2>
+      <p class="panel-sub">Resolver paso a paso una ecuación separable clásica.</p>
+
+      <div class="eq-block">\[ \frac{dy}{dx} = y^3\cos(x) \]</div>
+
+      <p>Antes de ver la solución completa, ordena tú mismo los pasos: identifica qué se hace primero, segundo, etc.</p>
+
+      <div class="order-widget" id="widget-ex1"></div>
+
+      <details class="final-answer">
+        <summary>Ver solución final</summary>
+        <div class="rev">
+          \[ -\frac{1}{2y^2} = \sin(x) + C \quad\Longrightarrow\quad y = \pm\frac{1}{\sqrt{-2\sin(x) - 2C}} \]
+          <p style="margin:10px 0 0; font-size:13.5px;">La primera expresión es la <strong>solución implícita</strong>; al despejar <em>y</em> obtenemos la <strong>forma explícita</strong>. Nota que también <em>y = 0</em> es una solución (llamada <em>solución trivial</em>), que se pierde al dividir entre <em>y³</em> en el paso de separación.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= TAB 3 ================= -->
+  <section class="panel" id="t3">
+    <div class="card">
+      <h2 class="panel-title">Ejemplo 2</h2>
+      <p class="panel-sub">Otra ecuación separable, esta vez con la variable y dentro de una función trigonométrica.</p>
+
+      <div class="eq-block">\[ \frac{dy}{dx} = \frac{1+5x^2}{x^2\sin(y)} \]</div>
+
+      <p>Ordena los pasos del proceso para esta ecuación:</p>
+
+      <div class="order-widget" id="widget-ex2"></div>
+
+      <details class="final-answer">
+        <summary>Ver solución final</summary>
+        <div class="rev">
+          \[ -\cos(y) = -\frac{1}{x} + 5x + C \quad\Longrightarrow\quad \cos(y) = \frac{1}{x} - 5x + C \]
+          <p style="margin:10px 0 0; font-size:13.5px;">Esta es la <strong>solución implícita</strong>. Si quieres despejar <em>y</em> de forma explícita, puedes aplicar arcocoseno a ambos lados:</p>
+          \[ y = \arccos\!\left(\frac{1}{x} - 5x + C\right) \]
+          <p style="margin:10px 0 0; font-size:13.5px;">Ten en cuenta que el arcocoseno solo da un valor principal; por la periodicidad del coseno, la familia completa de soluciones es \( y = \pm\arccos\!\left(\tfrac{1}{x}-5x+C\right) + 2k\pi \). Por eso, en la práctica, la forma implícita suele preferirse.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ================= TAB 4 ================= -->
+  <section class="panel" id="t4">
+    <div class="card">
+      <h2 class="panel-title">Resumen y fórmulas</h2>
+      <p class="panel-sub">Una chuleta rápida para repasar antes de un examen.</p>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <div class="lbl">Forma general</div>
+          \[ \frac{dy}{dx} = f(x)g(y) \]
+        </div>
+        <div class="formula-card">
+          <div class="lbl">Tras separar</div>
+          \[ \frac{dy}{g(y)} = f(x)\,dx \]
+        </div>
+        <div class="formula-card">
+          <div class="lbl">Tras integrar</div>
+          \[ \int \frac{dy}{g(y)} = \int f(x)\,dx \]
+        </div>
+        <div class="formula-card">
+          <div class="lbl">No olvides</div>
+          Revisar si \( g(y)=0 \) da soluciones adicionales (perdidas al dividir).
+        </div>
+      </div>
+
+      <h3 style="font-family:'Fraunces',serif; font-size:17px; margin:26px 0 4px;">Casos especiales</h3>
+      <table class="cases">
+        <thead>
+          <tr><th>Forma</th><th>Qué pasa</th><th>Cómo se resuelve</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>\( \frac{dy}{dx} = f(x) \)</td>
+            <td>No depende de <em>y</em> (equivale a <em>g(y)=1</em>)</td>
+            <td>Ya está separada; solo integra el lado derecho respecto a <em>x</em>.</td>
+          </tr>
+          <tr>
+            <td>\( \frac{dy}{dx} = g(y) \)</td>
+            <td>No depende explícitamente de <em>x</em> (ecuación <strong>autónoma</strong>)</td>
+            <td>\( \int \frac{dy}{g(y)} = \int dx = x + C \)</td>
+          </tr>
+          <tr>
+            <td>\( g(y_0)=0 \)</td>
+            <td>Existe una <strong>solución constante</strong> \( y=y_0 \)</td>
+            <td>Verifícala aparte: al dividir entre <em>g(y)</em> se pierde del proceso normal.</td>
+          </tr>
+          <tr>
+            <td>\( \int \frac{dy}{g(y)} \) o \( \int f(x)\,dx \) sin forma cerrada</td>
+            <td>La integral no es expresable con funciones elementales</td>
+            <td>Se deja indicada (en forma integral) o se resuelve numéricamente.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Hecho como prueba de un artifact HTML autocontenido · fórmulas renderizadas con KaTeX</footer>
+</div>
+</div>
+
+<script>
+/* ---------- Selector de módulos ---------- */
+(function(){
+  var btns=document.querySelectorAll('#gbar button');
+  function show(id, noScroll){
+    document.querySelectorAll('.module').forEach(function(m){m.classList.toggle('on',m.id===id);});
+    btns.forEach(function(b){b.classList.toggle('on',b.dataset.mod===id);});
+    try{history.replaceState(null,'','#'+id);}catch(e){}
+    if(!noScroll) window.scrollTo(0,0);
+    if(window.renderMathInElement){
+      renderMathInElement(document.getElementById(id),{delimiters:[
+        {left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},
+        {left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],throwOnError:false});
+    }
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.mod);});});
+  var h=(location.hash||'').slice(1);
+  if(h==='mod-sv'||h==='mod-ib') show(h,true);
+})();
+</script>
+
+<!-- JS módulo 1 · Integración por partes -->
+<script>
+(function(document){
+
+/* ---------- KaTeX render helper ---------- */
+function renderMath(el){
+  if(window.renderMathInElement){
+    renderMathInElement(el||document.body,{
+      delimiters:[
+        {left:'$$',right:'$$',display:true},
+        {left:'\\[',right:'\\]',display:true},
+        {left:'$',right:'$',display:false},
+        {left:'\\(',right:'\\)',display:false}
+      ],
+      throwOnError:false
+    });
+  }
+}
+window.addEventListener('DOMContentLoaded',()=>{ setTimeout(()=>renderMath(document.body),60); });
+
+/* ---------- Navegación ---------- */
+const panels=document.querySelectorAll('.panel');
+const navBtns=document.querySelectorAll('#nav button');
+function goTo(id){
+  panels.forEach(p=>p.classList.toggle('active',p.id===id));
+  navBtns.forEach(b=>b.classList.toggle('active',b.dataset.go===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-go]').forEach(b=>{
+  b.addEventListener('click',()=>goTo(b.dataset.go));
+});
+
+/* ---------- Reveals ---------- */
+document.querySelectorAll('[data-reveal]').forEach(r=>{
+  r.querySelector('[data-revbtn]').addEventListener('click',()=>{
+    r.classList.toggle('open');
+    const b=r.querySelector('[data-revbtn]');
+    b.textContent = b.textContent.replace(/^[▸▾]/, r.classList.contains('open')?'▾':'▸');
+  });
+});
+
+/* ---------- Descubrir u (Experimentos 1-3) ---------- */
+// Exp 1: los dos repartos
+const pA=document.getElementById('pathA'), pB=document.getElementById('pathB'),
+      pAb=document.getElementById('pathA-btn'), pBb=document.getElementById('pathB-btn');
+function showPath(w){
+  pA.classList.toggle('on',w==='A'); pB.classList.toggle('on',w==='B');
+  pAb.classList.toggle('on',w==='A'); pBb.classList.toggle('on',w==='B');
+}
+pAb.addEventListener('click',()=>showPath('A'));
+pBb.addEventListener('click',()=>showPath('B'));
+
+// Exp 2: tarjetas "derivar"
+document.querySelectorAll('#derivGrid .deriv-card > button').forEach(b=>{
+  b.addEventListener('click',()=>b.parentElement.classList.toggle('open'));
+});
+
+// Exp 3: el ordenador
+const RANK_ORDER=['I','L','A','T','E'];
+const RANK_INFO={
+  I:{name:'Inversas trigonométricas', note:'arctan x → 1/(1+x²): la inversa desaparece'},
+  L:{name:'Logarítmicas', note:'ln x → 1/x: el logaritmo desaparece'},
+  A:{name:'Algebraicas', note:'x² → 2x → … → 0: bajan de grado'},
+  T:{name:'Trigonométricas', note:'cos x → −sen x: giran, no se simplifican'},
+  E:{name:'Exponenciales', note:'eˣ → eˣ: no cambian nunca'}
+};
+let rankState=['T','A','E','I','L']; // desordenado a propósito
+const rankerEl=document.getElementById('ranker');
+function drawRanker(){
+  rankerEl.innerHTML='';
+  rankState.forEach((k,i)=>{
+    const it=RANK_INFO[k];
+    const row=document.createElement('div');
+    row.className='rank-item';
+    row.innerHTML=`<span class="pos">${i+1}</span>
+      <span class="lbl"><b>${it.name}</b><br><span>${it.note}</span></span>
+      <span class="mv"><button data-up="${i}" aria-label="Subir">▲</button><button data-down="${i}" aria-label="Bajar">▼</button></span>`;
+    rankerEl.appendChild(row);
+  });
+  rankerEl.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>moveRank(+b.dataset.up,-1)));
+  rankerEl.querySelectorAll('[data-down]').forEach(b=>b.addEventListener('click',()=>moveRank(+b.dataset.down,1)));
+}
+function moveRank(i,dir){
+  const j=i+dir;
+  if(j<0||j>=rankState.length)return;
+  [rankState[i],rankState[j]]=[rankState[j],rankState[i]];
+  drawRanker();
+}
+function markPlaced(){
+  rankerEl.querySelectorAll('.rank-item').forEach((row,i)=>{
+    row.classList.toggle('placed', rankState[i]===RANK_ORDER[i]);
+  });
+}
+const rankFb=document.getElementById('rankFb');
+document.getElementById('rankCheck').addEventListener('click',()=>{
+  markPlaced();
+  const correct=rankState.every((k,i)=>k===RANK_ORDER[i]);
+  if(correct){
+    rankFb.innerHTML='<div class="verdict good">✓ ¡Lo armaste! Ese es exactamente el orden de prioridad. Mira abajo cómo se llama eso que dedujiste.</div>';
+    revealIlate();
+  }else{
+    const hits=rankState.filter((k,i)=>k===RANK_ORDER[i]).length;
+    rankFb.innerHTML=`<div class="verdict bad">Aún no. Llevas <b>${hits} de 5</b> en su lugar. Pista: arriba las que <b>desaparecen</b> al derivar (inversa y log), luego las que <b>bajan de grado</b>, luego las que <b>giran</b>, y hasta abajo la que <b>no cambia</b>.</div>`;
+  }
+});
+document.getElementById('rankShow').addEventListener('click',()=>{
+  rankState=[...RANK_ORDER]; drawRanker(); markPlaced();
+  rankFb.innerHTML='<div class="verdict good">Este es el orden, de la mejor u a la peor. Lo que importa es que entiendas el porqué de cada lugar, no la lista en sí.</div>';
+  revealIlate();
+});
+function revealIlate(){
+  const r=document.getElementById('ilateReveal');
+  if(!r.classList.contains('show')){
+    r.classList.add('show');
+    renderMath(r);
+    setTimeout(()=>r.scrollIntoView({behavior:'smooth',block:'center'}),140);
+  }
+}
+drawRanker();
+
+/* ---------- Laboratorio ILATE ---------- */
+const labCases=[
+  { tex:'\\int x\\,\\operatorname{sen}x\\,dx', a:'x', b:'\\operatorname{sen}x',
+    correct:'a', why:'ILATE: <b>A</b>lgebraica (x) entra antes que <b>T</b>rigonométrica (sen x). Eliges u = x.' },
+  { tex:'\\int x^{3}\\ln x\\,dx', a:'x^{3}', b:'\\ln x',
+    correct:'b', why:'ILATE: <b>L</b>ogarítmica (ln x) entra antes que <b>A</b>lgebraica (x³). Eliges u = ln x.' },
+  { tex:'\\int x\\,e^{2x}\\,dx', a:'x', b:'e^{2x}',
+    correct:'a', why:'ILATE: <b>A</b>lgebraica (x) entra antes que <b>E</b>xponencial (e²ˣ). Eliges u = x.' },
+  { tex:'\\int e^{x}\\arctan x\\,dx', a:'e^{x}', b:'\\arctan x',
+    correct:'b', why:'ILATE: <b>I</b>nversa trigonométrica (arctan x) es la primera de toda la fila, gana a la <b>E</b>xponencial. Eliges u = arctan x.' }
+];
+let labIdx=0, labScore=0, labAnswered=false;
+const labQ=document.getElementById('labq'),
+      labChoices=document.getElementById('labchoices'),
+      labFb=document.getElementById('labfb'),
+      labNext=document.getElementById('labnext'),
+      labCount=document.getElementById('labcount'),
+      labScoreEl=document.getElementById('labscore');
+
+function renderLab(){
+  const c=labCases[labIdx];
+  labAnswered=false;
+  labCount.textContent=`Caso ${labIdx+1} de ${labCases.length}`;
+  labScoreEl.textContent=`Aciertos: ${labScore}`;
+  labQ.innerHTML=`<p style="text-align:center;color:var(--ink-soft);margin:0 0 6px;font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase">¿Quién es tu u ?</p><span>$$${c.tex}$$</span>`;
+  labChoices.innerHTML=`
+    <div class="choice" data-pick="a">$u=${c.a}$</div>
+    <div class="choice" data-pick="b">$u=${c.b}$</div>`;
+  labFb.innerHTML=''; labNext.style.display='none';
+  renderMath(labQ); renderMath(labChoices);
+  labChoices.querySelectorAll('.choice').forEach(ch=>{
+    ch.addEventListener('click',()=>pickLab(ch.dataset.pick));
+  });
+}
+function pickLab(pick){
+  if(labAnswered)return; labAnswered=true;
+  const c=labCases[labIdx];
+  const choices=labChoices.querySelectorAll('.choice');
+  choices.forEach(ch=>{
+    if(ch.dataset.pick===c.correct) ch.classList.add('right');
+    if(ch.dataset.pick===pick && pick!==c.correct) ch.classList.add('wrong');
+  });
+  const ok = pick===c.correct;
+  if(ok) labScore++;
+  labScoreEl.textContent=`Aciertos: ${labScore}`;
+  labFb.innerHTML=`<div class="fb-box ${ok?'ok':'no'}">${ok?'✓ ¡Exacto! ':'✗ Casi. '} ${c.why}</div>`;
+  labNext.style.display = (labIdx<labCases.length-1)?'inline-block':'none';
+  if(labIdx===labCases.length-1){
+    labFb.innerHTML+=`<div class="fb-box ok" style="margin-top:10px">Terminaste el laboratorio con ${labScore}/${labCases.length}. Ya tienes el reflejo de ILATE. ¡Vamos al problema del reto!</div>`;
+  }
+}
+labNext.addEventListener('click',()=>{ if(labIdx<labCases.length-1){labIdx++; renderLab();} });
+renderLab();
+
+/* ---------- Galería de ejemplos ---------- */
+document.querySelectorAll('.ex-tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.ex-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.ex-body').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`[data-exbody="${t.dataset.ex}"]`).classList.add('active');
+  });
+});
+
+/* ---------- Quiz ---------- */
+const quizData=[
+  { stem:'La fórmula de integración por partes nace de…',
+    opts:['la regla de la cadena','la regla del producto de la derivada','el teorema del valor medio','la sustitución trigonométrica'],
+    correct:1, expl:'Se obtiene integrando $(uv)\'=u\'v+uv\'$ y despejando. Por eso pudiste deducirla sin memorizar.' },
+  { stem:'En $\\int x\\,\\operatorname{sen}x\\,dx$, según ILATE, ¿quién es $u$?',
+    opts:['$u=\\operatorname{sen}x$','$u=x\\operatorname{sen}x$','$u=x$','no se puede usar partes'],
+    correct:2, expl:'Algebraica (A) entra antes que Trigonométrica (T): $u=x$, $dv=\\operatorname{sen}x\\,dx$.' },
+  { stem:'$\\displaystyle\\int x\\,e^{x}\\,dx \\;=\\;$',
+    opts:['$xe^{x}+e^{x}+C$','$xe^{x}-e^{x}+C$','$\\tfrac{x^{2}}{2}e^{x}+C$','$e^{x}+C$'],
+    correct:1, expl:'Con $u=x,\\ dv=e^{x}dx$: $xe^{x}-\\int e^{x}dx = xe^{x}-e^{x}+C=e^{x}(x-1)+C$.' },
+  { stem:'Si tomas $u=\\ln x$, entonces $du=$',
+    opts:['$\\ln x\\,dx$','$x\\,dx$','$\\dfrac{1}{x}\\,dx$','$\\dfrac{x^{3}}{3}\\,dx$'],
+    correct:2, expl:'La derivada de $\\ln x$ es $\\tfrac{1}{x}$. Justo por eso $\\ln x$ es buen candidato a $u$: se simplifica al derivar.' },
+  { stem:'Para resolver $\\int \\ln x\\,dx$ (una sola función), ¿qué tomas como $dv$?',
+    opts:['$dv=\\ln x\\,dx$','$dv=dx$','$dv=\\dfrac{1}{x}dx$','no aplica partes'],
+    correct:1, expl:'El truco: $u=\\ln x$ y $dv=dx$ (el $dx$ siempre está). Da $x\\ln x - x + C$.' },
+  { stem:'¿Cuántas veces aplicas partes en $\\int x^{2}e^{x}\\,dx$?',
+    opts:['Ninguna','Una','Dos','Tres'],
+    correct:2, expl:'El polinomio es de grado 2, así que partes se aplica 2 veces hasta que el polinomio desaparece.' }
+];
+let score=0, answeredCount=0;
+const quizCard=document.getElementById('quizCard');
+const letters=['A','B','C','D'];
+quizData.forEach((q,qi)=>{
+  const div=document.createElement('div'); div.className='quiz-q';
+  let optsHtml='';
+  q.opts.forEach((o,oi)=>{
+    optsHtml+=`<button class="opt" data-q="${qi}" data-o="${oi}"><span class="mk">${letters[oi]}</span><span>${o}</span></button>`;
+  });
+  div.innerHTML=`<div class="stem"><span class="num">Pregunta ${qi+1}</span>${q.stem}</div>
+    <div class="opts">${optsHtml}</div>
+    <div class="qexpl" id="expl-${qi}">${q.expl}</div>`;
+  quizCard.appendChild(div);
+});
+let locked=Array(quizData.length).fill(false);
+quizCard.querySelectorAll('.opt').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const qi=+btn.dataset.q, oi=+btn.dataset.o;
+    if(locked[qi])return; locked[qi]=true;
+    const q=quizData[qi];
+    const group=quizCard.querySelectorAll(`.opt[data-q="${qi}"]`);
+    group.forEach(b=>{
+      b.classList.add('locked');
+      if(+b.dataset.o===q.correct) b.classList.add('right');
+      if(+b.dataset.o===oi && oi!==q.correct) b.classList.add('wrong');
+    });
+    if(oi===q.correct) score++;
+    answeredCount++;
+    document.getElementById('expl-'+qi).classList.add('show');
+    document.getElementById('scoreNum').textContent=score;
+    renderMath(document.getElementById('expl-'+qi));
+  });
+});
+renderMath(quizCard);
+document.getElementById('resetQuiz').addEventListener('click',()=>{
+  score=0; answeredCount=0; locked=Array(quizData.length).fill(false);
+  document.getElementById('scoreNum').textContent='0';
+  quizCard.querySelectorAll('.opt').forEach(b=>b.classList.remove('right','wrong','locked'));
+  quizCard.querySelectorAll('.qexpl').forEach(e=>e.classList.remove('show'));
+  goTo('quiz');
+});
+
+/* ---------- Tutora de Cálculo (API de Anthropic) ---------- */
+const fab=document.getElementById('fab'),
+      chat=document.getElementById('chat'),
+      chatClose=document.getElementById('chatClose'),
+      chatLog=document.getElementById('chatLog'),
+      chatText=document.getElementById('chatText'),
+      chatSend=document.getElementById('chatSend');
+
+const SYSTEM_PROMPT = `Eres "Tutora de Cálculo", una tutora de cálculo cálida, paciente y directa para estudiantes de bachillerato del CCH de la UNAM (México). Hablas español mexicano, informal y cercano, de tú. Tu único tema es la INTEGRACIÓN POR PARTES y la regla nemotécnica ILATE.
+
+Tu método es SOCRÁTICO: NO entregas la respuesta final de golpe. Guías con preguntas y pistas para que el estudiante descubra el siguiente paso por sí mismo. Solo das la solución completa si el estudiante ya lo intentó y la pide explícitamente, o si lleva varios intentos atorado.
+
+Recuerda siempre estas ideas, que el estudiante ya vio:
+- La fórmula nace de la regla del producto: ∫u dv = uv − ∫v du.
+- Es un "trueque": cambias una integral difícil por una más fácil.
+- u conviene que se simplifique al derivar; dv que sea fácil de integrar. Este es EL criterio de fondo.
+- ILATE es solo la nemotecnia para recordar ese criterio: Inversas trig, Logarítmicas, Algebraicas, Trigonométricas, Exponenciales (la de más arriba es u). NO lo presentes como una regla a memorizar. Si el estudiante aún no lo dedujo, guíalo con preguntas a notar que conviene que u se simplifique al derivar (¿qué le pasa a ln x al derivar? ¿y a eˣ?), y solo nómbralo ILATE cuando él ya entendió el porqué.
+
+Reglas de estilo:
+- Respuestas BREVES (2-5 frases). Una pista a la vez.
+- Usa notación matemática con $...$ para inline y $$...$$ para ecuaciones centradas (se renderiza con KaTeX). Ejemplo: $u=\\ln x$, $du=\\frac{1}{x}dx$.
+- Tono motivador, nunca regañón. Celebra los intentos.
+- Si preguntan algo fuera de integración por partes, redirige con amabilidad al tema.`;
+
+let history=[]; // {role, content}
+let chatBusy=false;
+
+function openChat(){ chat.classList.add('open'); fab.style.display='none';
+  if(history.length===0){ botSay('¡Hola! Soy tu Tutora de Cálculo 👋 Estoy aquí para que <b>descubras</b> la integración por partes, no para darte respuestas masticadas. ¿En qué te atoras? Puedes mandarme una integral o una duda.'); }
+  setTimeout(()=>chatText.focus(),200);
+}
+function closeChat(){ chat.classList.remove('open'); fab.style.display='flex'; }
+fab.addEventListener('click',openChat);
+chatClose.addEventListener('click',closeChat);
+
+function addMsg(role,html){
+  const d=document.createElement('div');
+  d.className='msg '+(role==='user'?'user':'bot');
+  d.innerHTML=html;
+  chatLog.appendChild(d);
+  renderMath(d);
+  chatLog.scrollTop=chatLog.scrollHeight;
+  return d;
+}
+function botSay(html){ addMsg('bot',html); }
+
+document.querySelectorAll('#chatSuggest button').forEach(b=>{
+  b.addEventListener('click',()=>{ chatText.value=b.textContent; sendChat(); });
+});
+
+chatText.addEventListener('input',()=>{ chatText.style.height='44px'; chatText.style.height=Math.min(chatText.scrollHeight,120)+'px'; });
+chatText.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault(); sendChat();} });
+chatSend.addEventListener('click',sendChat);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function sendChat(){
+  const text=chatText.value.trim();
+  if(!text||chatBusy)return;
+  chatBusy=true; chatSend.disabled=true;
+  addMsg('user',esc(text));
+  history.push({role:'user',content:text});
+  chatText.value=''; chatText.style.height='44px';
+
+  const typing=document.createElement('div');
+  typing.className='msg bot';
+  typing.innerHTML='<div class="typing"><span></span><span></span><span></span></div>';
+  chatLog.appendChild(typing); chatLog.scrollTop=chatLog.scrollHeight;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        system:SYSTEM_PROMPT,
+        messages:history
+      })
+    });
+    const data=await resp.json();
+    typing.remove();
+    let reply=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    if(!reply) reply='Uy, me quedé pensando y no salió respuesta. ¿Me lo repites de otra forma?';
+    history.push({role:'assistant',content:reply});
+    // pasar saltos de línea a <br> sin romper LaTeX
+    const safe=reply.replace(/\n/g,'<br>');
+    addMsg('bot',safe);
+  }catch(err){
+    typing.remove();
+    botSay('No pude conectarme en este momento. Si estás viendo esto fuera de Claude, el tutor necesita ejecutarse dentro del visor de artefactos. Mientras tanto, recuerda: <b>ILATE</b> te dice quién es $u$. 😉');
+  }finally{
+    chatBusy=false; chatSend.disabled=false; chatText.focus();
+  }
+}
+
+})(new Proxy(document,{get:function(t,k){var r=t.getElementById('mod-ib');if(k==='body')return r;if(k==='querySelectorAll'||k==='querySelector')return r[k].bind(r);var v=t[k];return typeof v==='function'?v.bind(t):v;}}));
+</script>
+
+<!-- JS módulo 2 · Separación de variables -->
+<script>
+(function(document){
+
+  // ---------- TABS ----------
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+  tabBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      tabBtns.forEach(b=>b.classList.remove('active'));
+      panels.forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      renderMath();
+    });
+  });
+
+  // ---------- MATH RENDERING ----------
+  function renderMath(){
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left:'\\[', right:'\\]', display:true},
+        {left:'\\(', right:'\\)', display:false},
+        {left:'$$', right:'$$', display:true}
+      ]
+    });
+  }
+
+  // ---------- ORDER WIDGET FACTORY ----------
+  function buildOrderWidget(containerId, steps){
+    const container = document.getElementById(containerId);
+    container.innerHTML = `
+      <h3>¿Cuál es el orden correcto del proceso?</h3>
+      <p class="order-hint">Haz clic en las tarjetas en el orden en que crees que deben resolverse. Luego presiona "Verificar".</p>
+      <div class="order-cards"></div>
+      <div class="order-controls">
+        <button class="action primary" data-role="verify" disabled>Verificar orden</button>
+        <button class="action ghost" data-role="reset">Reiniciar</button>
+        <span class="feedback" data-role="feedback"></span>
+      </div>
+    `;
+
+    const cardsWrap = container.querySelector('.order-cards');
+    const verifyBtn = container.querySelector('[data-role="verify"]');
+    const resetBtn = container.querySelector('[data-role="reset"]');
+    const feedback = container.querySelector('[data-role="feedback"]');
+
+    let shuffled = [...steps];
+    // shuffle
+    for(let i=shuffled.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [shuffled[i],shuffled[j]] = [shuffled[j],shuffled[i]];
+    }
+
+    let selection = []; // array of step ids in click order
+    let locked = false;
+
+    function render(){
+      cardsWrap.innerHTML = '';
+      shuffled.forEach(step=>{
+        const el = document.createElement('div');
+        el.className = 'order-card';
+        el.dataset.id = step.id;
+        const pickedIdx = selection.indexOf(step.id);
+        if(pickedIdx !== -1) el.classList.add('picked');
+        if(locked) el.classList.add('locked');
+        el.innerHTML = `
+          <div class="badge">${pickedIdx !== -1 ? (pickedIdx+1) : ''}</div>
+          <div class="content">${step.text}</div>
+        `;
+        el.addEventListener('click', ()=>{
+          if(locked) return;
+          const idx = selection.indexOf(step.id);
+          if(idx !== -1){
+            selection.splice(idx,1);
+          } else {
+            selection.push(step.id);
+          }
+          render();
+        });
+        cardsWrap.appendChild(el);
+      });
+      verifyBtn.disabled = selection.length !== steps.length;
+      renderMath();
+    }
+
+    verifyBtn.addEventListener('click', ()=>{
+      locked = true;
+      let allCorrect = true;
+      selection.forEach((id, idx)=>{
+        const card = cardsWrap.querySelector(`[data-id="${id}"]`);
+        const correctPos = steps.findIndex(s=>s.id===id);
+        if(correctPos === idx){
+          card.classList.add('correct');
+        } else {
+          card.classList.add('incorrect');
+          allCorrect = false;
+        }
+      });
+      cardsWrap.querySelectorAll('.order-card').forEach(c=>c.classList.add('locked'));
+      feedback.textContent = allCorrect
+        ? '¡Correcto! Ese es el orden del proceso.'
+        : 'Algunas tarjetas no están en el lugar correcto (en rojo). Presiona "Reiniciar" para intentarlo de nuevo.';
+      feedback.className = 'feedback ' + (allCorrect ? 'good' : 'bad');
+      verifyBtn.disabled = true;
+    });
+
+    resetBtn.addEventListener('click', ()=>{
+      selection = [];
+      locked = false;
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      // reshuffle for variety
+      for(let i=shuffled.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [shuffled[i],shuffled[j]] = [shuffled[j],shuffled[i]];
+      }
+      render();
+    });
+
+    render();
+  }
+
+  // ---------- DATA: Example 1 steps (correct order) ----------
+  const ex1Steps = [
+    { id:'a', text: 'Identificar la forma <b>f(x)g(y)</b>: aquí \\( f(x)=\\cos(x) \\) y \\( g(y)=y^3 \\).' },
+    { id:'b', text: 'Separar variables dividiendo entre \\( y^3 \\): \\( \\dfrac{dy}{y^3} = \\cos(x)\\,dx \\)' },
+    { id:'c', text: 'Integrar ambos lados: \\( \\displaystyle\\int y^{-3}\\,dy = \\int \\cos(x)\\,dx \\)' },
+    { id:'d', text: 'Evaluar las integrales: \\( -\\dfrac{1}{2y^2} = \\sin(x) + C \\)' },
+    { id:'e', text: 'Despejar \\(y\\) para obtener la forma explícita.' },
+  ];
+
+  // ---------- DATA: Example 2 steps (correct order) ----------
+  const ex2Steps = [
+    { id:'a', text: 'Identificar la forma \\( f(x)g(y) \\): aquí \\( f(x)=\\dfrac{1+5x^2}{x^2}=\\dfrac{1}{x^2}+5 \\) y \\( g(y)=\\dfrac{1}{\\sin(y)} \\).' },
+    { id:'b', text: 'Separar variables multiplicando por \\( \\sin(y) \\) ambos lados: \\( \\sin(y)\\,dy = \\left(\\dfrac{1}{x^2}+5\\right)dx \\)' },
+    { id:'c', text: 'Integrar ambos lados: \\( \\displaystyle\\int \\sin(y)\\,dy = \\int \\left(x^{-2}+5\\right)dx \\)' },
+    { id:'d', text: 'Evaluar las integrales: \\( -\\cos(y) = -\\dfrac{1}{x} + 5x + C \\)' },
+    { id:'e', text: 'Despejar \\(y\\) (opcional) usando arcocoseno para obtener la forma explícita.' },
+  ];
+
+  buildOrderWidget('widget-ex1', ex1Steps);
+  buildOrderWidget('widget-ex2', ex2Steps);
+  renderMath();
+
+})(new Proxy(document,{get:function(t,k){var r=t.getElementById('mod-sv');if(k==='body')return r;if(k==='querySelectorAll'||k==='querySelector')return r[k].bind(r);var v=t[k];return typeof v==='function'?v.bind(t):v;}}));
+</script>
+
+</body>
+</html>
